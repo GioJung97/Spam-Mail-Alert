@@ -1,7 +1,10 @@
-.astroEnv/
 __pycache__/
+
+
 token.json
 credentials.json
 state.json
+
+
 .env
 
