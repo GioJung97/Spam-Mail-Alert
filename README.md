@@ -52,7 +52,7 @@ python src/main.py
 - On success, you should see “✅ Auth succeeded” and a short list of unread subjects/snippets (or “No unread messages found.”). 
 - A **token.json** will appear (keep it private); and **state.json** will hold your baseline last_history_id.
 
-#### Make Sure to keep **credentials.json**, **token.json**, and **state.json** CREDENTIAL.
+#### ** MAKE SURE TO KEEP **credentials.json**, **token.json**, and **state.json** CREDENTIAL. **
 
 ### Case: Authentication Fail (ERROR 403: access_denied)
 This happens when the user you are trying to log in has not been added to the list of approved testers.
