@@ -48,12 +48,14 @@ To connect with Gmail, the API needs to be enabled.
 ```
 python src/main.py
 ```
-- A browser will open for Google login. 
+- Once running the script, a browser will open for Google login. 
 - On success, you should see “✅ Auth succeeded” and a short list of unread subjects/snippets (or “No unread messages found.”). 
-- A token.json will appear (keep it private); and state.json will hold your baseline last_history_id.
+- A **token.json** will appear (keep it private); and **state.json** will hold your baseline last_history_id.
+
+#### Make Sure to keep **credentials.json**, **token.json**, and **state.json** CREDENTIAL.
 
 ### Case: Authentication Fail (ERROR 403: access_denied)
-- This happens when the user you are trying to log in has not been added to the list of approved testers.
+This happens when the user you are trying to log in has not been added to the list of approved testers.
 - If the Authentication fails due to the `Access Blocked` error, make sure to complete the Google Verification Process (follow the instruction below).  
     - Go to the Google CLoud Console
     - Go to **APIs & Services** -> **OAuth consent screen**.
