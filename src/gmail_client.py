@@ -13,7 +13,7 @@ CREDS_PATH = ROOT / "credentials.json"
 STATE_PATH = ROOT / "state.json"
 
 # For read-only while we build the pipeline.
-SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
+SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
 def _load_state() -> Dict[str, Any]:
     if STATE_PATH.exists():
@@ -148,3 +148,41 @@ def poll_once(service) -> List[Dict[str, str]]:
             "snippet": msg.get("snippet", ""),
         })
     return new_msgs
+
+# --- Label & modify helpers ---
+
+def _get_or_create_label(service, name: str) -> str:
+    """Return the labelId for a given label name; create it if it doesn't exist."""
+    labels_resp = service.users().labels().list(userId="me").execute()
+    for lab in labels_resp.get("labels", []):
+        if lab.get("name") == name:
+            return lab["id"]
+    # Create label
+    body = {
+        "name": name,
+        "labelListVisibility": "labelShow",
+        "messageListVisibility": "show",
+    }
+    created = service.users().labels().create(userId="me", body=body).execute()
+    return created["id"]
+
+def mark_as_spam(service, message_id: str) -> None:
+    """Move a message to Gmail's Spam (system) label and remove from INBOX."""
+    body = {
+        "addLabelIds": ["SPAM"],    # system label
+        "removeLabelIds": ["INBOX"]
+    }
+    service.users().messages().modify(userId="me", id=message_id, body=body).execute()
+
+def unmark_spam_to_inbox(service, message_id: str) -> None:
+    """Remove SPAM label and restore to INBOX."""
+    body = {
+        "addLabelIds": ["INBOX"],
+        "removeLabelIds": ["SPAM"]
+    }
+    service.users().messages().modify(userId="me", id=message_id, body=body).execute()
+
+def add_label(service, message_id: str, label_name: str) -> None:
+    lab_id = _get_or_create_label(service, label_name)
+    body = {"addLabelIds": [lab_id], "removeLabelIds": []}
+    service.users().messages().modify(userId="me", id=message_id, body=body).execute()
