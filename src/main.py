@@ -4,6 +4,10 @@ from typing import Optional, Dict, Any
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+import time
+from gmail_client import get_service, poll_once
+
+POLL_SECONDS = 120
 
 # For read-only first; we’ll upgrade to modify soon.
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
@@ -60,28 +64,45 @@ def main():
     service = get_service()
     print("✅ Auth succeeded")
 
-    # List a few unread messages as a smoke test
-    resp = service.users().messages().list(userId="me", q="is:unread", maxResults=5).execute()
-    msgs = resp.get("messages", [])
-    if not msgs:
-        print("No unread messages found.")
-    else:
-        print(f"Found {len(msgs)} unread:")
-        for m in msgs:
-            msg = service.users().messages().get(userId="me", id=m["id"], format="metadata",
-                                                 metadataHeaders=["From", "Subject"]).execute()
-            headers = msg.get("payload", {}).get("headers", [])
-            subject = get_subject(headers)
-            snippet = msg.get("snippet", "")
-            print(f"- {subject[:80]} | {snippet[:80]}")
+    while True:
+        try:
+            new_msgs = poll_once(service)
+            if new_msgs:
+                print(f"📥 New messages: {len(new_msgs)}")
+                for m in new_msgs:
+                    subj = (m["subject"] or "").strip()
+                    print(f"- From: {m['from']}\n  Subject: {subj[:120]}\n  Snippet: {m['snippet'][:120]}\n")
+            # else: nothing new this cycle
+        except KeyboardInterrupt:
+            print("\nStopping.")
+            break
+        except Exception as e:
+            # Be noisy and keep going; we’ll harden this later.
+            print(f"[error] {e!r}")
+        time.sleep(POLL_SECONDS)
 
-    # Save a baseline historyId for next step (polling)
-    if STATE_PATH.exists():
-        data = json.loads(STATE_PATH.read_text())
-        print(f"Existing baseline historyId: {data.get('last_history_id')}")
-    else:
-        hid = bootstrap_history_id(service)
-        print(f"Initialized baseline historyId: {hid}")
+    # # List a few unread messages as a smoke test
+    # resp = service.users().messages().list(userId="me", q="is:unread", maxResults=5).execute()
+    # msgs = resp.get("messages", [])
+    # if not msgs:
+    #     print("No unread messages found.")
+    # else:
+    #     print(f"Found {len(msgs)} unread:")
+    #     for m in msgs:
+    #         msg = service.users().messages().get(userId="me", id=m["id"], format="metadata",
+    #                                              metadataHeaders=["From", "Subject"]).execute()
+    #         headers = msg.get("payload", {}).get("headers", [])
+    #         subject = get_subject(headers)
+    #         snippet = msg.get("snippet", "")
+    #         print(f"- {subject[:80]} | {snippet[:80]}")
+
+    # # Save a baseline historyId for next step (polling)
+    # if STATE_PATH.exists():
+    #     data = json.loads(STATE_PATH.read_text())
+    #     print(f"Existing baseline historyId: {data.get('last_history_id')}")
+    # else:
+    #     hid = bootstrap_history_id(service)
+    #     print(f"Initialized baseline historyId: {hid}")
 
 if __name__ == "__main__":
     main()
