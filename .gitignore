@@ -1,12 +1,17 @@
 __pycache__/
 
-
+# json files
 token.json
 credentials.json
 state.json
 
+# database files
+state.db
+state.db-shm
+state.db-wal
 
-.env
+# environment files
+.venv
 
-# from mac
+# from macOS
 .DS_Store
