@@ -19,9 +19,9 @@ This is an individual project which is a background email notifier that checks i
 ## Project Status
 
 - [x] Gmail API authentication
-- [ ] Basic unread email listing
-- [ ] Polling loop with history tracking
-- [ ] Spam classification (baseline)
+- [x] Basic unread email listing
+- [x] Polling loop with history tracking
+- [x] Spam classification (baseline)
 - [ ] Desktop notifications
 - [ ] Gmail label actions
 - [ ] MCP server integration
