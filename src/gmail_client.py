@@ -143,6 +143,7 @@ def poll_once(service) -> List[Dict[str, str]]:
         headers = msg.get("payload", {}).get("headers", [])
         new_msgs.append({
             "id": mid,
+            "threadId": msg.get("threadId"),
             "from": _get_header(headers, "From"),
             "subject": _get_header(headers, "Subject"),
             "snippet": msg.get("snippet", ""),
