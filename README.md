@@ -1,6 +1,8 @@
 # 📧 Spam Notifier MCP
 
-**This is an individual Project.** Spam Notifier MCP is a background email agent that monitors your Gmail inbox, detects new messages, classifies them as spam or not-spam, and notifies you instantly on your desktop. It also exposes its core functions as **MCP tools**, allowing AI clients (e.g., Claude Desktop) to interact with your inbox in real-time.
+This project provides hands-on experience with the Model Context Protocol (MCP) and a simple machine learning workflow using a Logistic Regression model for spam detection.  
+
+Spam Notifier MCP is a background email agent that monitors your Gmail inbox, detects new messages, classifies them as spam or not-spam, and notifies you instantly on your desktop. It also exposes its core functions as **MCP tools**, allowing AI clients (e.g., Claude Desktop) to interact with your inbox in real-time.
 
 ---
 
